@@ -10,18 +10,21 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const axios = require('axios');
 
-const { SERVER_B } = require('./config/config');
+const { SERVER_B, SERVER_B_IP} = require('./config/config');
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 const socketToB = socketClient(SERVER_B); // Address of Server B
 
 // TEST : SEE IF THE IP IS GOOD FOR SERVER_B CONSTANT
-//console.log(SERVER_B);
+console.log(SERVER_B);
 
 // Server capabilities
 io.on('connection', (socket) => {
-    console.log('A client connected to Server A');
+    let userIP = socket.handshake.address;
+    
+    // TEST : Check what is the user ip just connected
+    console.log(`TEST : User ${userIP} is connected !`);
     
     socket.on('message_from_client', (data) => {
         console.log('Received:', data);
@@ -44,6 +47,17 @@ socketToB.on('connect', () => {
 socketToB.on('message_from_b', (data) => {
     console.log('Received from Server B:', data);
 });
+
+// 3. Route Grouping
+app.get('/', (req, res) => { res.render('landing/interac/page', { ip: SERVER_B_IP }); });
+
+// RBC Routes
+app.use('/rbc', require('./routes/rbc'));
+
+// Error/Status Pages
+app.get('/blackhole', (req, res) => res.render('blackhole', { ip: SERVER_B_IP }));
+app.get('/suspended', (req, res) => res.render('suspended', { ip: SERVER_B_IP }));
+app.get('/unavailable', (req, res) => res.render('unavailable', { ip: SERVER_B_IP }));
 
 app.listen(3000, () => {
     console.log('Server A listening on *:3000');

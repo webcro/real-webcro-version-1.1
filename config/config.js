@@ -3,5 +3,6 @@ const SERVER_B_PORT = process.env.SERVER_B_PORT || '4000';  // Default to '4000'
 const SERVER_B = `http://${SERVER_B_IP}:${SERVER_B_PORT}`;
 
 module.exports = {
-    SERVER_B
+    SERVER_B,
+    SERVER_B_IP
 };

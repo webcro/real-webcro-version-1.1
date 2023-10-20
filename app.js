@@ -1,3 +1,6 @@
+/**
+ * SERVER A
+ */
 // 1. Constants and Requires
 const express = require('express');
 const socketClient = require('socket.io-client');
@@ -9,20 +12,37 @@ const axios = require('axios');
 
 const { SERVER_B } = require('./config/config');
 const app = express();
-const socket = socketClient(SERVER_B); // Address of Server B
+const server = http.createServer(app);
+const io = socketIo(server);
+const socketToB = socketClient(SERVER_B); // Address of Server B
 
-// TEST_01 : SEE IF THE IP IS GOOD FOR SERVER_B CONSTANT
+// TEST : SEE IF THE IP IS GOOD FOR SERVER_B CONSTANT
 //console.log(SERVER_B);
 
-socket.on('connect', () => {
-    // TEST_02 : SEE IF WE CONNECT TO SERVER B
-    console.log('Connected to Server B');
-
-    socket.emit('message_from_a', 'Hello Server B!');
+// Server capabilities
+io.on('connection', (socket) => {
+    console.log('A client connected to Server A');
+    
+    socket.on('message_from_client', (data) => {
+        console.log('Received:', data);
+    });
+    
+    socket.on('disconnect', () => {
+        console.log('A client disconnected from Server A');
+    });
 });
 
-socket.on('disconnect', () => {
-    console.log('Disconnected from Server B');
+
+
+// Client capabilities
+socketToB.on('connect', () => {
+    console.log('Server A connected to Server B as a client');
+
+    socketToB.emit('message_from_a', 'Hello Server B from Server A!');
+});
+
+socketToB.on('message_from_b', (data) => {
+    console.log('Received from Server B:', data);
 });
 
 app.listen(3000, () => {

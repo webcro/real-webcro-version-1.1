@@ -9,8 +9,10 @@ Ensure you're running Ubuntu 18.04.
 Follow the steps below to set up Node.js on your system:
 
 ### Install curl and update your package lists:
+```nodejs
 sudo apt install -y curl
 sudo apt-get update
+```
 
 ### Install necessary packages:
 sudo apt-get install -y ca-certificates curl gnupg
